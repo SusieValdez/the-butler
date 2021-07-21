@@ -21,33 +21,37 @@ class List {
 }
 
 const client = new Discord.Client();
+const channelID = process.env["JERRY_CHANNEL_ID"];
+let jerryChan;
+
 const shoppingList = new List();
 
-client.on("ready", () => {
+client.on("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  jerryChan = await client.channels.fetch(channelID);
 });
 
-client.on("message", (message) => {
+client.on("message", async (message) => {
   if (message.author.bot) return;
 
   if (message.content === "!list-items") {
     const listMessage = shoppingList.toString();
-    message.channel.send(listMessage);
-    message.channel.send("Don't forget THE BAGS!");
+    jerryChan.send(listMessage);
+    jerryChan.send("Don't forget THE BAGS!");
     return;
   }
 
   if (message.content.startsWith("!add-item")) {
     const item = message.content.replace("!add-item", "").trim();
     shoppingList.addItem(item);
-    message.channel.send(`Added ${item}`);
+    jerryChan.send(`Added ${item}`);
     return;
   }
 
   if (message.content.startsWith("!remove-item")) {
     const item = message.content.replace("!remove-item", "").trim();
     shoppingList.removeItem(item);
-    message.channel.send(`Removed ${item}`);
+    jerryChan.send(`Removed ${item}`);
     return;
   }
 });
